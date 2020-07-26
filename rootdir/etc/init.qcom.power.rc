@@ -187,6 +187,17 @@ on property:sys.boot_completed=1
 
 on property:init.svc.recovery=running
     trigger enable-low-power
+    
+on property:ro.crypto.state=encrypted
+    start sbinqseecomd
+
+# Separate copy needed to use /sbin/linker64 instead of /system/bin/linker64
+service sbinqseecomd /sbin/qseecomd
+    oneshot
+    disabled
+    user root
+    group root
+    seclabel u:r:recovery:s0 
 
 service vendor.charger /system/bin/chargeonlymode
     class charger
