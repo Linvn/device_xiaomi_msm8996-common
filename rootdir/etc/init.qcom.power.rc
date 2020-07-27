@@ -75,8 +75,12 @@ on charger
     start vendor.power_off_alarm
 
 on enable-low-power
-    # Disable thermal hotplug to switch governor
+    # Disable thermal BCL hotplug to switch governor
     write /sys/module/msm_thermal/core_control/enabled 0
+    write /sys/devices/soc/soc:qcom,bcl/mode "disable"
+    write /sys/devices/soc/soc:qcom,bcl/hotplug_mask 0
+    write /sys/devices/soc/soc:qcom,bcl/hotplug_soc_mask 0
+    write /sys/devices/soc/soc:qcom,bcl/mode "enable"
 
     # Enable Adaptive LMK
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
@@ -121,11 +125,15 @@ on enable-low-power
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/ignore_hispeed_on_notif 1
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/enable_prediction 1
 
-    # Re-enable thermal hotplug
+    # Re-enable thermal and BCL hotplug
     write /sys/module/msm_thermal/core_control/enabled 1
+    write /sys/devices/soc/soc:qcom,bcl/mode "disable"
+    write /sys/devices/soc/soc:qcom,bcl/hotplug_mask 12
+    write /sys/devices/soc/soc:qcom,bcl/hotplug_soc_mask 8
+    write /sys/devices/soc/soc:qcom,bcl/mode "enable"
 
     # Input boost config
-    write /sys/module/cpu_boost/parameters/input_boost_freq "0:1324800 2:1324800"
+    write /sys/module/cpu_boost/parameters/input_boost_freq "0:537000 2:537000"
     write /sys/module/cpu_boost/parameters/input_boost_ms 40
 
     # Set big.LITTLE scheduler parameters
@@ -180,10 +188,11 @@ on property:sys.boot_completed=1
     start iop
 
     # Update cpusets now that boot is complete and we want better load balancing
+    write /dev/cpuset/foreground/cpus 0-3
+    write /dev/cpuset/foreground/boost/cpus 0-3
+    write /dev/cpuset/background/cpus 0-3
+    write /dev/cpuset/system-background/cpus 0-3
     write /dev/cpuset/top-app/cpus 0-3
-    write /dev/cpuset/foreground/cpus 0-2
-    write /dev/cpuset/background/cpus 0
-    write /dev/cpuset/system-background/cpus 0-2
 
 on property:init.svc.recovery=running
     trigger enable-low-power
