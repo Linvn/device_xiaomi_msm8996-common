@@ -80,15 +80,10 @@ on charger
     write /sys/module/msm_thermal/parameters/enabled "N"
     start vendor.hvdcp_opti
     start thermal-engine
-    start vendor.power_off_alarm
 
 on enable-low-power
-    # Disable thermal BCL hotplug to switch governor
+    # Disable thermal hotplug to switch governor
     write /sys/module/msm_thermal/core_control/enabled 0
-    write /sys/devices/soc/soc:qcom,bcl/mode "disable"
-    write /sys/devices/soc/soc:qcom,bcl/hotplug_mask 0
-    write /sys/devices/soc/soc:qcom,bcl/hotplug_soc_mask 0
-    write /sys/devices/soc/soc:qcom,bcl/mode "enable"
 
     # Enable Adaptive LMK
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
@@ -130,15 +125,11 @@ on enable-low-power
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 307200
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/ignore_hispeed_on_notif 0
 
-    # Re-enable thermal and BCL hotplug
+    # Re-enable thermal hotplug
     write /sys/module/msm_thermal/core_control/enabled 1
-    write /sys/devices/soc/soc:qcom,bcl/mode "disable"
-    write /sys/devices/soc/soc:qcom,bcl/hotplug_mask 12
-    write /sys/devices/soc/soc:qcom,bcl/hotplug_soc_mask 8
-    write /sys/devices/soc/soc:qcom,bcl/mode "enable"
 
-    # Input boost config
-    write /sys/module/cpu_boost/parameters/input_boost_freq "0:537000 2:537000"
+   # Input boost config
+    write /sys/module/cpu_boost/parameters/input_boost_freq "0:979000 2:979000"
     write /sys/module/cpu_boost/parameters/input_boost_ms 40
 
     # Set big.LITTLE scheduler parameters
@@ -197,7 +188,7 @@ on property:sys.boot_completed=1
     write /dev/cpuset/foreground/cpus 0-2
     write /dev/cpuset/background/cpus 0
     write /dev/cpuset/system-background/cpus 0-2
-    
+
     #Config Simple Thermal driver
     # [throttle_freq_LITTLE, throttle_freq_BIG, throttle_temp, unthrottle_temp]
     write /sys/kernel/msm_thermal/enabled 0
@@ -231,32 +222,20 @@ on property:sys.boot_completed=1
 
 on property:init.svc.recovery=running
     trigger enable-low-power
-    
-on property:ro.crypto.state=encrypted
-    start sbinqseecomd
 
-# Separate copy needed to use /sbin/linker64 instead of /system/bin/linker64
-service sbinqseecomd /sbin/qseecomd
-    oneshot
-    disabled
-    user root
-    group root
-    seclabel u:r:recovery:s0 
-
-service vendor.charger /system/bin/chargeonlymode
+service charger /system/bin/chargeonlymode
     class charger
-    user system
     group system graphics input
     capabilities SYS_BOOT
     seclabel u:r:charger:s0
 
-service energy-awareness /vendor/bin/energy-awareness
+service energy-awareness /system/vendor/bin/energy-awareness
     class main
     user root
     group system
     oneshot
 
-service vendor.hvdcp_opti /vendor/bin/hvdcp_opti
+service vendor.hvdcp_opti /system/vendor/bin/hvdcp_opti
     class main
     user root
     group system wakelock

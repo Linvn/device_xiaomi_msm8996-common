@@ -30,7 +30,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.audio.sdk.ssr=false \
     vendor.audio.dolby.ds2.enabled=false \
     vendor.audio.dolby.ds2.hardbypass=false \
-    vendor.audio_hal.period_size=192 \
+    vendor.audio_hal.period_size=240 \
     vendor.audio.hw.aac.encoder=true \
     vendor.audio.offload.buffer.size.kb=64 \
     vendor.audio.offload.gapless.enabled=true \
@@ -55,10 +55,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.btconfig.chip=QCA6164 \
     ro.btconfig.dev=/dev/ttyHS0
 
-# Boot
-PRODUCT_PROPERTY_OVERRIDES += \
-    sys.vendor.shutdown.waittime=500
-
 # Camera
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.camera.gyro.disable=0 \
@@ -68,21 +64,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.cne.feature=1
 
-# ConfigStore HAL (SurfaceFlinger)
+# ConfigStore
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    ro.surface_flinger.use_color_management=true \
-    ro.surface_flinger.wcg_composition_dataspace=143261696 \
-    ro.surface_flinger.protected_contents=true \
-    ro.surface_flinger.set_idle_timer_ms=80 \
-    ro.surface_flinger.set_touch_timer_ms=200 \
-    ro.surface_flinger.use_smart_90_for_video=true \
-    ro.surface_flinger.protected_contents=true \
-    ro.surface_flinger.support_kernel_idle_timer=true \
-    ro.surface_flinger.set_display_power_timer_ms=10000 \
+    debug.sf.recomputecrop=0 \
+    debug.sf.disable_backpressure=1 \
+    debug.sf.enable_gl_backpressure=1 \
     ro.surface_flinger.force_hwc_copy_for_virtual_displays=true \
     ro.surface_flinger.max_virtual_display_dimension=4096 \
-    ro.surface_flinger.vsync_event_phase_offset_ns=2000000 \
-    ro.surface_flinger.vsync_sf_event_phase_offset_ns=6000000 \
     ro.surface_flinger.max_frame_buffer_acquired_buffers=3
 
 # Data modules
@@ -99,20 +87,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.qcom.ad.sensortype=2 \
     ro.vendor.display.cabl=0
 
-# Doze parameters
-PRODUCT_PROPERTY_OVERRIDES += \
-    pm.sleep_mode=1
-
 # DRM
 PRODUCT_PROPERTY_OVERRIDES += \
     drm.service.enabled=true
-
-# Fast Dormancy
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.fast.dormancy=1 \
-    ro.config.hw_fast_dormancy=1 \
-    ro.ril.fast.dormancy.rule=1 \
-    ro.semc.enable.fast_dormancy=true
 
 # FRP
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -124,7 +101,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.gralloc.gfx_ubwc_disable=0 \
     debug.sf.enable_hwc_vds=1 \
     debug.sf.hw=1 \
-    debug.cpurend.vsync=false \
     debug.sf.latch_unsignaled=1 \
     dev.pm.dyn_samplingrate=1 \
     persist.demo.hdmirotationlock=false \
@@ -135,31 +111,43 @@ PRODUCT_PROPERTY_OVERRIDES += \
     vendor.display.disable_skip_validate=1 \
     vendor.display.enable_default_color_mode=1 \
     vendor.display.perf_hint_window=50 \
+    vendor.gralloc.enable_fb_ubwc=1 \
+    debug.sf.recomputecrop=0 \
     vendor.gralloc.enable_fb_ubwc=1
 
-# IMS / VoLTE
+# Surfaceflinger
 PRODUCT_PROPERTY_OVERRIDES += \
-   persist.dbg.volte_avail_ovr=1 \
-   persist.dbg.vt_avail_ovr=1 \
-   persist.dbg.wfc_avail_ovr=1 \
-   persist.radio.VT_CAM_INTERFACE=2 \
-   persist.radio.VT_ENABLE=1 \
-   persist.radio.VT_HYBRID_ENABLE=1
+    debug.sf.early_phase_offset_ns=1500000 \
+    debug.sf.early_app_phase_offset_ns=1500000 \
+    debug.sf.early_gl_phase_offset_ns=3000000 \
+    debug.sf.early_gl_app_phase_offset_ns=15000000
 
+# IMS
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.dbg.volte_avail_ovr=1 \
+    persist.dbg.vt_avail_ovr=1 \
+    service.qti.ims.enabled=1 \
+    persist.dbg.wfc_avail_ovr=1 \
+    persist.radio.VT_CAM_INTERFACE=2 \
+    persist.radio.VT_ENABLE=1 \
+    persist.radio.VT_HYBRID_ENABLE=1
+    
 # Media
 PRODUCT_PROPERTY_OVERRIDES += \
     vendor.vidc.enc.disable.pq=true \
     vendor.video.disable.ubwc=1 \
+    media.stagefright.thumbnail.prefer_hw_codecs=true \
+    mmp.enable.3g2=true \
+    media.aac_51_output_enabled=true \
+    mm.enable.smoothstreaming=true \
+    persist.mm.enable.prefetch=true \
     vidc.enc.dcvs.extra-buff-count=2 \
-    mm.enable.sec.smoothstreaming=true \
-    mm.enable.smoothstreaming=true
+    debug.stagefright.omx_default_rank.sw-audio=1 \
+    debug.stagefright.omx_default_rank=0
 
 # Memory optimizations
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.qti.sys.fw.bg_apps_limit=60 \
-    ro.vendor.qti.sys.fw.bservice_enable=true \
-    ro.vendor.qti.sys.fw.bservice_limit=5 \
-    ro.vendor.qti.sys.fw.bservice_age=5000
+    ro.vendor.qti.sys.fw.bservice_enable=true
 
 # NFC
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -169,10 +157,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Perf
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.extension_library=libqti-perfd-client.so \
-    ro.vendor.qti.sys.fw.bg_apps_limit=60 \
-    ro.min.fling_velocity=140 \
-    ro.max.fling_velocity=40000 \
-    vendor.perf.gestureflingboost.enable=true
+    ro.vendor.qti.sys.fw.bg_apps_limit=60
+
+# Priv-app permissions whitelist
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.control_privapp_permissions=enforce
 
 # Radio
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -188,12 +177,33 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.force_on_dc=true \
     persist.radio.multisim.config=dsds \
     persist.radio.redir_party_num=1 \
-    persist.sys.fflag.override.settings_network_and_internet_v2=true \
     persist.vendor.radio.custom_ecc=1 \
     persist.vendor.radio.rat_on=combine \
-    persist.radio.add_power_save=1 \
-    persist.vendor.radio.sib16_support=1
+    persist.vendor.radio.sib16_support=1 \
+    persist.sys.fflag.override.settings_network_and_internet_v2=true        persist.sys.fflag.override.settings_network_and_internet_v2=true \
+    persist.vendor.radio.add_power_save=1 \
+    telephony.lteOnCdmaDevice=1 \
+    persist.vendor.radio.sw_mbn_update=0 \
+    persist.vendor.radio.hw_mbn_update=0
 
+    # Volte
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.force_on_dc=true \
+    persist.radio.custom_ecc=1 \
+    persist.radio.data_con_rprt=1 \
+    persist.vendor.radio.data_ltd_sys_ind=1 \
+    persist.radio.data_ltd_sys_ind=1 \
+    persist.vendor.radio.ignore_dom_time=10 \
+    persist.radio.ignore_dom_time=10 \
+    persist.radio.rat_on=combine \
+    persist.radio.is_wps_enabled=true \
+    persist.radio.videopause.mode=1 \
+    persist.radio.sap_silent_pin=1 \
+    persist.radio.always_send_plmn=true \
+    persist.rcs.supported=1 \
+    persist.dbg.ims_volte_enable=1 \
+    persist.radio.data_lte_sys_ind=1
+    
 # RmNet Data
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.rmnet.data.enable=true \
@@ -218,25 +228,33 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     sys.usb.controller=6a00000.dwc3
 
-# Volte
+    # Sensors
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.vendor.radio.force_on_dc=true \
-    persist.radio.custom_ecc=1 \
-    persist.radio.data_con_rprt=1 \
-    persist.vendor.radio.data_ltd_sys_ind=1 \
-    persist.radio.data_ltd_sys_ind=1 \
-    persist.vendor.radio.ignore_dom_time=10 \
-    persist.radio.ignore_dom_time=10 \
-    persist.radio.rat_on=combine \
-    persist.radio.is_wps_enabled=true \
-    persist.radio.videopause.mode=1 \
-    persist.radio.sap_silent_pin=1 \
-    persist.radio.always_send_plmn=true \
-    persist.rcs.supported=1 \
-    persist.dbg.ims_volte_enable=1 \
-    persist.radio.data_lte_sys_ind=1
+    ro.qti.sensors.dev_ori=false \
+    ro.qti.sensors.pmd=false \
+    ro.qti.sensors.sta_detect=false \
+    ro.qti.sensors.mot_detect=false
 
 # Wifi
 PRODUCT_PROPERTY_OVERRIDES += \
-    wifi.interface=wlan0 \
-    wifi.supplicant_scan_interval=180
+    wifi.interface=wlan0
+
+# Set lmkd options
+PRODUCT_PRODUCT_PROPERTIES += \
+    ro.lmk.low=1001 \
+    ro.lmk.medium=800 \
+    ro.lmk.critical=0 \
+    ro.lmk.critical_upgrade=false \
+    ro.lmk.upgrade_pressure=100 \
+    ro.lmk.downgrade_pressure=100 \
+    ro.lmk.kill_heaviest_task=true \
+    ro.lmk.kill_timeout_ms=100 \
+    ro.lmk.use_minfree_levels=true
+
+# GPS
+PRODUCT_PROPERTY_OVERRIDES += \
+   persist.backup.ntpServer=server ntp1.aliyun.com
+
+# Zygote preforking
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.device_config.runtime_native.usap_pool_enabled=true
