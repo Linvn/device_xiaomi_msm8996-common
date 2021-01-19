@@ -51,6 +51,14 @@ on boot
     chown system system /dev/cpuset/camera-daemon/tasks
     chmod 0664 /dev/cpuset/camera-daemon/tasks
 
+  # Set light thermal restrictions while optimizing apps
+    # [throttle_freq_LITTLE, throttle_freq_big, throttle_temp, unthrottle_temp]
+    write /sys/kernel/msm_thermal/zone0 "1228800 1632000 46 44"
+    write /sys/kernel/msm_thermal/zone1 "1228800 1555200 50 47"
+    write /sys/kernel/msm_thermal/zone2 "1036800 1248000 55 53"
+    write /sys/kernel/msm_thermal/zone3 "729600 729600 65 63"
+    write /sys/kernel/msm_thermal/enabled 1
+
     # Enable sched boost
     write /proc/sys/kernel/sched_boost 1
 
@@ -88,17 +96,16 @@ on enable-low-power
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load 1
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif 1
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay 19000
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 90
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay "38000 768000:138000 844000:78000 979000:158000 1056000:58000 1132000:78000 1209000:158000 1286000:118000 1363000:178000 1440000:118000 1593000:58000"
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 60
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 20000
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 960000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 614000
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 1
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads 80
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 19000
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 79000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "64 460000:68 537000:16 614000:52 691000:16 768000:56 844000:89 902000:68 979000:44 1056000:36 1132000:89 1209000:68 1286000:72 1363000:32 1440000:28 1516000:68 1593000:80 2188000:76"
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 18000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 98000
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 307200
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/ignore_hispeed_on_notif 0
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/enable_prediction 1
 
     # Bring CPU2 online
     write /sys/devices/system/cpu/cpu2/online 1
@@ -107,30 +114,29 @@ on enable-low-power
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "interactive"
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/use_sched_load 1
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/use_migration_notif 1
-    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/above_hispeed_delay "19000 1400000:39000 1700000:39000 2100000:79000"
-    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/go_hispeed_load 90
+    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/above_hispeed_delay "198000 2150000:158000 2246000:98000"
+    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/go_hispeed_load 96
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/timer_rate 20000
-    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/hispeed_freq 1248000
+    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/hispeed_freq 1516000
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/io_is_busy 1
-    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/target_loads "85 1500000:90 1800000:95 2100000:99"
-    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/min_sample_time 19000
-    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/max_freq_hysteresis 39000
+    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/target_loads "28 384000:20 537000:40 614000:48 691000:56 748000:97 825000:72 902000:80 979000:72 1132000:86 1209000:72 1286000:96 1363000:97 1440000:72 1516000:64 1593000:60 1670000:56 1747000:99"
+    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/min_sample_time 18000
+    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/max_freq_hysteresis 18000
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 307200
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/ignore_hispeed_on_notif 0
-    write /sys/devices/system/cpu/cpu2/cpufreq/interactive/enable_prediction 1
 
     # Re-enable thermal hotplug
     write /sys/module/msm_thermal/core_control/enabled 1
 
-    # Input boost config
-    write /sys/module/cpu_boost/parameters/input_boost_freq "0:1324800 2:1324800"
+   # Input boost config
+    write /sys/module/cpu_boost/parameters/input_boost_freq "0:979000 2:979000"
     write /sys/module/cpu_boost/parameters/input_boost_ms 40
 
     # Set big.LITTLE scheduler parameters
     write /proc/sys/kernel/sched_boost 0
-    write /proc/sys/kernel/sched_upmigrate 95
-    write /proc/sys/kernel/sched_downmigrate 90
-    write /proc/sys/kernel/sched_freq_inc_notify 400000
+    write /proc/sys/kernel/sched_upmigrate 32
+    write /proc/sys/kernel/sched_downmigrate 5
+    write /proc/sys/kernel/sched_freq_inc_notify 200000
     write /proc/sys/kernel/sched_freq_dec_notify 400000
     write /proc/sys/kernel/sched_spill_nr_run 3
     write /proc/sys/kernel/sched_init_task_load 100
@@ -182,6 +188,38 @@ on property:sys.boot_completed=1
     write /dev/cpuset/foreground/cpus 0-2
     write /dev/cpuset/background/cpus 0
     write /dev/cpuset/system-background/cpus 0-2
+
+       #Config Simple Thermal driver
+    # [throttle_freq_LITTLE, throttle_freq_BIG, throttle_temp, unthrottle_temp]
+    write /sys/kernel/msm_thermal/enabled 0
+    write /sys/kernel/msm_thermal/zone0  "1996800 2150400 37 36"
+    write /sys/kernel/msm_thermal/zone1  "1728000 2073600 38 37"
+    write /sys/kernel/msm_thermal/zone2  "1593600 1996800 39 38"
+    write /sys/kernel/msm_thermal/zone3  "1593600 1920000 40 39"
+    write /sys/kernel/msm_thermal/zone4  "1478400 1824000 41 40"
+    write /sys/kernel/msm_thermal/zone5  "1478400 1785600 42 41"
+    write /sys/kernel/msm_thermal/zone5  "1478400 1708800 43 42"
+    write /sys/kernel/msm_thermal/zone6  "1401600 1632000 44 43"
+    write /sys/kernel/msm_thermal/zone6  "1401600 1555200 45 44"
+    write /sys/kernel/msm_thermal/zone7  "1401600 1478400 46 45"
+    write /sys/kernel/msm_thermal/zone8  "1401600 1401600 47 46"
+    write /sys/kernel/msm_thermal/zone9  "1324800 1324800 48 47"
+    write /sys/kernel/msm_thermal/zone10 "1324800 1248000 49 48"
+    write /sys/kernel/msm_thermal/zone11 "1228800 1190400 50 49"
+    write /sys/kernel/msm_thermal/zone12 "1190400 1113600 51 50"
+    write /sys/kernel/msm_thermal/zone13 "1113600 1036800 52 51"
+    write /sys/kernel/msm_thermal/zone14 "1036800 940800 53 52"
+    write /sys/kernel/msm_thermal/zone15 "960000 883200 54 53"
+    write /sys/kernel/msm_thermal/zone16 "844800 806400 55 54"
+    write /sys/kernel/msm_thermal/zone17 "729600 729600 56 55"
+    write /sys/kernel/msm_thermal/zone18 "652800 652800 57 56"
+    write /sys/kernel/msm_thermal/zone19 "556800 556800 58 57"
+    write /sys/kernel/msm_thermal/zone20 "480000 480000 59 58"
+    write /sys/kernel/msm_thermal/zone21 "422400 403200 60 59"
+    write /sys/kernel/msm_thermal/zone22 "307200 307200 65 60"
+    write /sys/kernel/msm_thermal/sampling_ms 1000
+    write /sys/kernel/msm_thermal/enabled 1
+
 
 on property:init.svc.recovery=running
     trigger enable-low-power
